@@ -1,0 +1,5 @@
+1. rip all tables out and make a list of tables
+2. convert them to json
+3. put the json in the output folder
+
+4. create a next app that utilizes that json output and any other json outputs in the input folder
