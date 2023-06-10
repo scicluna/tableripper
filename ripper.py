@@ -2,9 +2,16 @@ import PyPDF2
 import re
 import json
 
+def barker_cleanup(items):
+    pattern = re.compile(r'^\d+')
+    items[:] = [re.sub(r'([A-Za-z]+\sBi\scoo\(.*?\)\d+\))', '', item) for item in items if pattern.match(item.strip())]
+
+
 # Create an empty string to hold the text from all pages
 all_text = ""
 table_list = []
+barker = True
+aeg = False
 
 # Unicode replacements
 unicode_replacements = {
@@ -36,10 +43,11 @@ with open("./input/source.pdf", "rb") as file:
         all_text += text
 
 # Regular expression to match tables
-table_pattern = r"(Table \d+–\d+:.*?(?=Table \d+–\d+:|$))"
+aeg_table_pattern = r"(Table \d+–\d+:.*?(?=Table \d+–\d+:|$))"
+barker_table_pattern = r"(d\d{1,2}.*?(?=d\d{1,2}|$))"
 
 # Use findall to extract all tables
-tables = re.findall(table_pattern, all_text, re.DOTALL)
+tables = re.findall(barker_table_pattern, all_text, re.DOTALL)
 
 # Now tables is a list of strings, with each string being a table
 for i, table in enumerate(tables):
@@ -63,6 +71,9 @@ for i, table in enumerate(tables):
     for unicode_char, replacement in unicode_replacements.items():
         items = [item.replace(unicode_char, replacement) for item in items]
 
+    if barker:
+        barker_cleanup(items)
+
     # Create a dictionary for this table
     table_dict = {"header": header, "items": items}
 
@@ -72,4 +83,6 @@ for i, table in enumerate(tables):
 # Write the list of tables to a JSON file
 with open('./output/tables.json', 'w') as f:
     json.dump(table_list, f)
+
+
 
