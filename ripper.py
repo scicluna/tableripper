@@ -48,11 +48,13 @@ barker_table_pattern = r"(d\d{1,2}.*?(?=d\d{1,2}|$))"
 
 # Use findall to extract all tables
 tables = re.findall(barker_table_pattern, all_text, re.DOTALL)
+print(tables)
 
 # Now tables is a list of strings, with each string being a table
 for i, table in enumerate(tables):
     # Split the table into lines
-    lines = table.split("\n")
+    lines = re.split("\n(?=\d+)", table)
+    print(lines)
 
     # The first line is the table header
     header = lines[0]
